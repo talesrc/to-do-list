@@ -1,5 +1,3 @@
-import operator
-
 from fastapi import status
 from fastapi.testclient import TestClient
 
@@ -174,13 +172,13 @@ def test_quando_nao_achar_a_tarefa_a_ser_removida_deve_retornar_status_404():
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_quando_solicitar_as_tarefas_a_nao_finalizada_tem_que_aparecer_antes_da_finalizada():
+def test__as_tarefas_nao_finalizadas_aparecem_antes_da_finalizadas():
     TAREFAS.append(
         {
             "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
             "titulo": "titulo 1",
             "descricao": "descricao 1",
-            "estado": "não finalizado",
+            "estado": "finalizado",
         }
     )
     TAREFAS.append(
@@ -188,21 +186,22 @@ def test_quando_solicitar_as_tarefas_a_nao_finalizada_tem_que_aparecer_antes_da_
             "id": "3fa85f64-5717-4562-b3fc-2c963f66afa7",
             "titulo": "titulo 1",
             "descricao": "descricao 1",
-            "estado": "finalizado",
+            "estado": "não finalizado",
         }
     )
     client = TestClient(app)
+    response = client.get('/tarefas')
     indexNotFinished = indexFinished = 0
-    for index, item in enumerate(TAREFAS):
-        if item["id"] == "3fa85f64-5717-4562-b3fc-2c963f66afa6":
+    for index, item in enumerate(response.json()):
+        if item["id"] == "3fa85f64-5717-4562-b3fc-2c963f66afa7":
             indexNotFinished = index
-        elif item["id"] == "3fa85f64-5717-4562-b3fc-2c963f66afa7":
+        elif item["id"] == "3fa85f64-5717-4562-b3fc-2c963f66afa6":
             indexFinished = index
     assert indexNotFinished < indexFinished
     TAREFAS.clear()
 
 
-def test_quando_solicitar_a_finalizacao_da_atividade_o_estado_fica_finalizado():
+def test_quando_solicitar_finalizacao_da_atividade_o_estado_fica_finalizado():
     TAREFAS.append(
         {
             "id": "3fa85f64-5717-4562-b3fc-2c963f66afa7",
@@ -217,7 +216,7 @@ def test_quando_solicitar_a_finalizacao_da_atividade_o_estado_fica_finalizado():
     TAREFAS.clear()
 
 
-def test_quando_solicitar_a_finalizacao_da_atividade_o_status_da_resposta_202():
+def test_quando_solicitar_finalizacao_da_atividade_o_status_da_resposta_202():
     TAREFAS.append(
         {
             "id": "3fa85f64-5717-4562-b3fc-2c963f66afa7",
@@ -232,7 +231,7 @@ def test_quando_solicitar_a_finalizacao_da_atividade_o_status_da_resposta_202():
     TAREFAS.clear()
 
 
-def test_quando_nao_achar_item_informado_para_finalizacao_deve_retornar_status_404():
+def test_quando_nao_achar_item_para_finalizacao_deve_retornar_status_404():
     client = TestClient(app)
     response = client.put("/tarefas/9000")
     assert response.status_code == status.HTTP_404_NOT_FOUND
