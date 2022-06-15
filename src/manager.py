@@ -20,8 +20,9 @@ TAREFAS = [
         "titulo": "lavar roupas",
         "descrição": "estão sujas",
         "estado": "não finalizado",
-    }
-    ]
+    },
+]
+
 
 @app.get("/tarefas")
 def listar():
