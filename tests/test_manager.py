@@ -190,7 +190,7 @@ def test__as_tarefas_nao_finalizadas_aparecem_antes_da_finalizadas():
         }
     )
     client = TestClient(app)
-    response = client.get('/tarefas')
+    response = client.get("/tarefas")
     indexNotFinished = indexFinished = 0
     for index, item in enumerate(response.json()):
         if item["id"] == "3fa85f64-5717-4562-b3fc-2c963f66afa7":
