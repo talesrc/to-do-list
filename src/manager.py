@@ -1,8 +1,8 @@
+import operator
 from enum import Enum
 from uuid import UUID, uuid4
-import operator
 
-from fastapi import FastAPI, status, Response
+from fastapi import FastAPI, Response, status
 from pydantic import BaseModel, constr
 
 
@@ -47,7 +47,7 @@ TAREFAS = [
 
 @app.get("/tarefas")
 def listar_tarefas():
-    return sorted(TAREFAS, key=operator.itemgetter('estado'), reverse=True)
+    return sorted(TAREFAS, key=operator.itemgetter("estado"), reverse=True)
 
 
 @app.post(
@@ -59,25 +59,28 @@ def criar(tarefa: TarefaEntrada):
     TAREFAS.append(nova_tarefa)
     return nova_tarefa
 
-@app.delete('/tarefas/{id}')
+
+@app.delete("/tarefas/{id}")
 def remover_tarefa(id):
     for i in range(0, len(TAREFAS)):
-        if TAREFAS[i]['id'] == id:
+        if TAREFAS[i]["id"] == id:
             TAREFAS.pop(i)
             return Response(status_code=status.HTTP_204_NO_CONTENT)
     return Response(status_code=status.HTTP_404_NOT_FOUND)
 
-@app.put('/tarefas/{id}', status_code=202)
+
+@app.put("/tarefas/{id}", status_code=202)
 def finalizar_tarefa(id):
     for i in range(0, len(TAREFAS)):
-        if TAREFAS[i]['id'] == id:
-            TAREFAS[i]['estado'] = 'finalizado'
+        if TAREFAS[i]["id"] == id:
+            TAREFAS[i]["estado"] = "finalizado"
             return TAREFAS[i]
     return Response(status_code=status.HTTP_404_NOT_FOUND)
 
-@app.get('/tarefas/{id}', status_code=202)
+
+@app.get("/tarefas/{id}", status_code=202)
 def listar_tarefa(id):
     for i in range(0, len(TAREFAS)):
-        if TAREFAS[i]['id'] == id:
+        if TAREFAS[i]["id"] == id:
             return TAREFAS[i]
     return Response(status_code=status.HTTP_404_NOT_FOUND)

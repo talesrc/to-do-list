@@ -1,8 +1,9 @@
+import operator
+
 from fastapi import status
 from fastapi.testclient import TestClient
 
 from src.manager import TAREFAS, app
-import operator
 
 
 def test_quando_listar_tarefas_devo_ter_como_retorno_codigo_de_status_200():
@@ -160,15 +161,18 @@ def test_quando_criar_uma_tarefa_esta_deve_ser_persistida():
     assert len(TAREFAS) == 1
     TAREFAS.clear()
 
+
 def test_quando_remover_uma_tarefa_deve_retornar_status_204():
     client = TestClient(app)
-    response = client.delete('/tarefas/1')
+    response = client.delete("/tarefas/1")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
 
 def test_quando_nao_achar_a_tarefa_a_ser_removida_deve_retornar_status_404():
     client = TestClient(app)
-    response = client.delete('/tarefas/aaaaaaaaaa')
+    response = client.delete("/tarefas/aaaaaaaaaa")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
 
 def test_quando_solicitar_as_tarefas_a_nao_finalizada_tem_que_aparecer_antes_da_finalizada():
     TAREFAS.append(
@@ -190,12 +194,13 @@ def test_quando_solicitar_as_tarefas_a_nao_finalizada_tem_que_aparecer_antes_da_
     client = TestClient(app)
     indexNotFinished = indexFinished = 0
     for index, item in enumerate(TAREFAS):
-        if item['id'] == '3fa85f64-5717-4562-b3fc-2c963f66afa6':
+        if item["id"] == "3fa85f64-5717-4562-b3fc-2c963f66afa6":
             indexNotFinished = index
-        elif item['id'] == "3fa85f64-5717-4562-b3fc-2c963f66afa7":
+        elif item["id"] == "3fa85f64-5717-4562-b3fc-2c963f66afa7":
             indexFinished = index
     assert indexNotFinished < indexFinished
     TAREFAS.clear()
+
 
 def test_quando_solicitar_a_finalizacao_da_atividade_o_estado_fica_finalizado():
     TAREFAS.append(
@@ -207,9 +212,10 @@ def test_quando_solicitar_a_finalizacao_da_atividade_o_estado_fica_finalizado():
         }
     )
     client = TestClient(app)
-    response = client.put('/tarefas/3fa85f64-5717-4562-b3fc-2c963f66afa7')
-    assert response.json()['estado'] == 'finalizado'
+    response = client.put("/tarefas/3fa85f64-5717-4562-b3fc-2c963f66afa7")
+    assert response.json()["estado"] == "finalizado"
     TAREFAS.clear()
+
 
 def test_quando_solicitar_a_finalizacao_da_atividade_o_status_da_resposta_202():
     TAREFAS.append(
@@ -221,19 +227,22 @@ def test_quando_solicitar_a_finalizacao_da_atividade_o_status_da_resposta_202():
         }
     )
     client = TestClient(app)
-    response = client.put('/tarefas/3fa85f64-5717-4562-b3fc-2c963f66afa7')
+    response = client.put("/tarefas/3fa85f64-5717-4562-b3fc-2c963f66afa7")
     assert response.status_code == status.HTTP_202_ACCEPTED
     TAREFAS.clear()
 
+
 def test_quando_nao_achar_item_informado_para_finalizacao_deve_retornar_status_404():
     client = TestClient(app)
-    response = client.put('/tarefas/9000')
+    response = client.put("/tarefas/9000")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
 
 def test_quando_nao_achar_item_informado_deve_retornar_status_404():
     client = TestClient(app)
-    response = client.get('/tarefas/9000')
+    response = client.get("/tarefas/9000")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
 
 def test_quando_retornar_item_solicitado_ter_status_da_resposta_202():
     TAREFAS.append(
@@ -245,6 +254,6 @@ def test_quando_retornar_item_solicitado_ter_status_da_resposta_202():
         }
     )
     client = TestClient(app)
-    response = client.put('/tarefas/3fa85f64-5717-4562-b3fc-2c963f66afa7')
+    response = client.put("/tarefas/3fa85f64-5717-4562-b3fc-2c963f66afa7")
     assert response.status_code == status.HTTP_202_ACCEPTED
     TAREFAS.clear()
